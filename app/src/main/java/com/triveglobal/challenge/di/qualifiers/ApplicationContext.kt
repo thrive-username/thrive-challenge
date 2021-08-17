@@ -1,4 +1,4 @@
-package com.triveglobal.challenge.di
+package com.triveglobal.challenge.di.qualifiers
 
 
 import javax.inject.Qualifier

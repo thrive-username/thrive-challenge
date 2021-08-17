@@ -2,6 +2,7 @@ package com.triveglobal.challenge.di
 
 import android.app.Application
 import android.content.Context
+import com.triveglobal.challenge.di.qualifiers.ApplicationContext
 import dagger.Module
 import dagger.Provides
 
