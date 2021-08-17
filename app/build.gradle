@@ -63,7 +63,9 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger"
     implementation "com.google.dagger:dagger-android-support:$dagger"
     kapt "com.google.dagger:dagger-compiler:$dagger"
+    //Jodatime
+    implementation "joda-time:joda-time:2.10.10"
 
     //Testing
-    testImplementation 'junit:junit:4.+'
+    testImplementation "junit:junit:4.+"
 }
