@@ -1,4 +1,4 @@
-package com.triveglobal.challenge
+ package com.triveglobal.challenge
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
