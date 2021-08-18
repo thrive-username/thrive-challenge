@@ -26,6 +26,10 @@ class RetrofitRemoteBookDataSource @Inject constructor(@BackendBaseUrl private v
         book.id?.let { backendAPI.deleteBook(it) }
     }
 
+    override suspend fun deleteAllBooks() {
+        backendAPI.deleteAllBooks()
+    }
+
     override suspend fun getAllBooks(): List<Book> {
         return backendAPI.getAllBooks()
     }

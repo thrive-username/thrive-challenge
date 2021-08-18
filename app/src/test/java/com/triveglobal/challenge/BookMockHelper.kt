@@ -7,10 +7,10 @@ object BookMockHelper {
 
     private val random = Random()
 
-    fun createBook() = Book(
+    fun createBook(id: Long? = random.nextLong()) = Book(
         "author${random.nextInt()}",
         "categories${random.nextInt()}",
-        random.nextLong(),
+        id,
         null,
         null,
         "publisher${random.nextInt()}",

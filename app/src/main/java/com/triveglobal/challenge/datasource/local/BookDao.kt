@@ -14,6 +14,9 @@ interface BookDao {
     @Delete
     suspend fun deleteBook(bookEntity: BookEntity)
 
+    @Query("delete from book")
+    suspend fun deleteAllBooks()
+
     @Query("select * from book")
     suspend fun getAllBooks(): List<BookEntity>
 

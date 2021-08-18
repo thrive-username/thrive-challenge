@@ -8,6 +8,8 @@ interface RemoteBookDataSource {
 
     suspend fun deleteBook(book: Book)
 
+    suspend fun deleteAllBooks()
+
     suspend fun getAllBooks(): List<Book>
 
     suspend fun updateBook(book: Book)

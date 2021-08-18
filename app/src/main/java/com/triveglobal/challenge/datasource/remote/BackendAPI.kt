@@ -11,6 +11,9 @@ internal interface BackendAPI {
     @DELETE("books/{id}")
     suspend fun deleteBook(@Path("id") id: Long)
 
+    @DELETE("clean")
+    suspend fun deleteAllBooks()
+
     @GET("books")
     suspend fun getAllBooks(): List<Book>
 

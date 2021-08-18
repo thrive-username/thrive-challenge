@@ -9,6 +9,8 @@ interface LocalBookDataSource {
 
     suspend fun deleteBook(book: Book)
 
+    suspend fun deleteAllBooks()
+
     suspend fun getAllBooks(): List<Book>
 
 }

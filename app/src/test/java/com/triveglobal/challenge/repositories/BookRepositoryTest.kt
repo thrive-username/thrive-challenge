@@ -162,4 +162,81 @@ class BookRepositoryTest {
         }
     }
 
+    @Test
+    fun `removeBook, with Id, Network call success, 2 states emitted, local data source updated`() = runBlockingTest {
+        val flow = bookRepository.booksStream()
+        val book = createBook()
+        val booksStored = listOf(createBook(), createBook())
+        doReturn(booksStored).`when`(localBookDataSource).getAllBooks()
+        flow.test {
+            bookRepository.removeBook(book)
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState(loading = true)))
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState(data = booksStored)))
+            verify(remoteBookDataSource).deleteBook(book)
+            verify(localBookDataSource).deleteBook(book)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `removeBook, without Id, throw error, no new state emitted, no interaction with local or remote data sources`() = runBlockingTest {
+        val flow = bookRepository.booksStream()
+        val book = createBook(id = null)
+        flow.test {
+            bookRepository.removeBook(book)
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
+            verifyNoInteractions(remoteBookDataSource)
+            verifyNoInteractions(localBookDataSource)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test(expected = RuntimeException::class)
+    fun `removeBook, with Id, network error,2 new states emitted, throw error, no interaction with local data sources`() = runBlockingTest {
+        val flow = bookRepository.booksStream()
+        val book = createBook()
+        val error = RuntimeException("Some Network Error")
+        doThrow(error).`when`(remoteBookDataSource).deleteBook(book)
+        flow.test {
+            bookRepository.removeBook(book)
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState(loading = true)))
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState(error = error)))
+            verify(localBookDataSource, never()).deleteBook(book)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `removeAllBooks, network success, 2 new states emitted, update local data source`() = runBlockingTest {
+        val flow = bookRepository.booksStream()
+        val booksStored = listOf<Book>()
+        doReturn(booksStored).`when`(localBookDataSource).getAllBooks()
+        flow.test {
+            bookRepository.removeAllBooks()
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState(loading = true)))
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState(data = booksStored)))
+            verify(remoteBookDataSource).deleteAllBooks()
+            verify(localBookDataSource).deleteAllBooks()
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test(expected = RuntimeException::class)
+    fun `removeAllBooks, network error, throw error, 2 new states emitted, no interaction with local data source`() = runBlockingTest {
+        val flow = bookRepository.booksStream()
+        val error = RuntimeException("Some Network Error")
+        doThrow(error).`when`(remoteBookDataSource).deleteAllBooks()
+        flow.test {
+            bookRepository.removeAllBooks()
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState(loading = true)))
+            errorCollector.checkThat(awaitItem(), equalTo(ResourceState(error = error)))
+            verifyNoInteractions(localBookDataSource)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
 }

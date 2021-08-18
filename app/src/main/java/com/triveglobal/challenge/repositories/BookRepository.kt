@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.lastOrNull
+import java.lang.IllegalArgumentException
 import java.lang.RuntimeException
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -74,11 +75,38 @@ class BookRepository @Inject constructor(
         }
     }
 
+    /**
+     * Updates the backend indicating the [book]
+     * has been checked out by [checkedOutBy] using the current time
+     * on this device
+     */
     suspend fun checkOutBook(book: Book, checkedOutBy: String){
         performCrudOperation(true){
             val bookToUpdate = book.copy(lastCheckedOutBy = checkedOutBy, lastCheckedOut = dateTimeProvider.currentDateTime)
             remoteBookDataSource.updateBook(bookToUpdate)
             localBookDataSource.saveOrUpdateBook(bookToUpdate)
+        }
+    }
+
+    /**
+     * Removes a book from the  backend and then updates the local data source
+     * @throws IllegalArgumentException if the[book] doesn't have an id
+     */
+    suspend fun removeBook(book: Book) {
+        performCrudOperation(true){
+            if (book.id == null) throw IllegalArgumentException("Book $book doesn't have an id")
+            remoteBookDataSource.deleteBook(book)
+            localBookDataSource.deleteBook(book)
+        }
+    }
+
+    /**
+     * Removes all books from the backend and then update the local data source
+     */
+    suspend fun removeAllBooks() {
+        performCrudOperation(true){
+            remoteBookDataSource.deleteAllBooks()
+            localBookDataSource.deleteAllBooks()
         }
     }
 
