@@ -4,7 +4,7 @@ import com.triveglobal.challenge.model.Book
 
 interface RemoteBookDataSource {
 
-    suspend fun saveBook(book: Book)
+    suspend fun saveBook(book: Book): Book
 
     suspend fun deleteBook(book: Book)
 

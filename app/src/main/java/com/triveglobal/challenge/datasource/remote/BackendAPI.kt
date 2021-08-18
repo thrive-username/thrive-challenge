@@ -6,7 +6,7 @@ import retrofit2.http.*
 internal interface BackendAPI {
 
     @POST("books")
-    suspend fun saveBook(@Body book: Book)
+    suspend fun saveBook(@Body book: Book): Book
 
     @DELETE("books/{id}")
     suspend fun deleteBook(@Path("id") id: Long)

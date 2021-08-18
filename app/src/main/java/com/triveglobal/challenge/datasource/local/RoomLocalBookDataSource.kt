@@ -21,9 +21,5 @@ class RoomLocalBookDataSource @Inject constructor(@ApplicationContext private va
         return bookDao.getAllBooks().map { BookMapper.toBook(it) }
     }
 
-    override suspend fun updateBook(book: Book) {
-        bookDao.deleteBook(BookMapper.toEntity(book))
-    }
-
 
 }

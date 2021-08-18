@@ -18,8 +18,8 @@ class RetrofitRemoteBookDataSource @Inject constructor(@BackendBaseUrl private v
             .create(BackendAPI::class.java)
     }
 
-    override suspend fun saveBook(book: Book) {
-        backendAPI.saveBook(book)
+    override suspend fun saveBook(book: Book): Book {
+        return backendAPI.saveBook(book)
     }
 
     override suspend fun deleteBook(book: Book) {

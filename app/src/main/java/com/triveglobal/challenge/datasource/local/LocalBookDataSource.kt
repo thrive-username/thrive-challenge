@@ -11,6 +11,4 @@ interface LocalBookDataSource {
 
     suspend fun getAllBooks(): List<Book>
 
-    suspend fun updateBook(book: Book)
-
 }

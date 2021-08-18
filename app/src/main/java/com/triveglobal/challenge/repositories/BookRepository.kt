@@ -3,6 +3,7 @@ package com.triveglobal.challenge.repositories
 import com.triveglobal.challenge.datasource.local.LocalBookDataSource
 import com.triveglobal.challenge.datasource.remote.RemoteBookDataSource
 import com.triveglobal.challenge.model.Book
+import com.triveglobal.challenge.model.DateTimeProvider
 import com.triveglobal.challenge.model.ResourceState
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -16,12 +17,26 @@ import kotlin.coroutines.CoroutineContext
 class BookRepository @Inject constructor(
     private val remoteBookDataSource: RemoteBookDataSource,
     private val localBookDataSource: LocalBookDataSource,
-    private val coroutineDispatcher: CoroutineDispatcher
+    private val coroutineDispatcher: CoroutineDispatcher,
+    private val dateTimeProvider: DateTimeProvider
 ) {
 
     //region Private Methods/Properties
     private val scope = CoroutineScope(coroutineDispatcher)
     private val booksResourceFlow = MutableStateFlow(ResourceState<List<Book>>())
+
+    private suspend fun performCrudOperation(throwError: Boolean = false, operation: suspend () -> Unit) {
+        val currentResourceState = booksResourceFlow.value.copy(loading = true, error = null)
+        booksResourceFlow.emit(currentResourceState)
+        try {
+            operation()
+            booksResourceFlow.emit(ResourceState(localBookDataSource.getAllBooks()))
+        }catch (error: Exception) {
+            booksResourceFlow.emit(currentResourceState.copy(loading = false, error = error))
+            if (throwError) throw error
+        }
+    }
+
     //endregion
 
     //region Public Methods/Properties
@@ -40,19 +55,34 @@ class BookRepository @Inject constructor(
         //If we are already refreshing discard this call
         if (booksResourceFlow.value.loading) return
         scope.launch{
-            val currentResourceState = booksResourceFlow.value.copy(loading = true, error = null)
-            booksResourceFlow.emit(currentResourceState)
-            try {
+            performCrudOperation{
                 val remoteBooks = remoteBookDataSource.getAllBooks()
                 remoteBooks.forEach { book ->
                     localBookDataSource.saveOrUpdateBook(book)
                 }
-                booksResourceFlow.emit(ResourceState(remoteBooks, null, false))
-            }catch (error: Exception) {
-                booksResourceFlow.emit(currentResourceState.copy(loading = false, error = error))
             }
         }
     }
+
+    /**
+     * Adds a new book on the backend, updating the local data source
+     */
+    suspend fun addBook(book: Book) {
+        performCrudOperation(true){
+            val remoteBook = remoteBookDataSource.saveBook(book)
+            localBookDataSource.saveOrUpdateBook(remoteBook)
+        }
+    }
+
+    suspend fun checkOutBook(book: Book, checkedOutBy: String){
+        performCrudOperation(true){
+            val bookToUpdate = book.copy(lastCheckedOutBy = checkedOutBy, lastCheckedOut = dateTimeProvider.currentDateTime)
+            remoteBookDataSource.updateBook(bookToUpdate)
+            localBookDataSource.saveOrUpdateBook(bookToUpdate)
+        }
+    }
+
+
     //endregion
 
 
