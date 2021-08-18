@@ -1,4 +1,4 @@
-package com.triveglobal.challenge.network
+package com.triveglobal.challenge.datasource.remote
 
 import com.triveglobal.challenge.di.qualifiers.BackendBaseUrl
 import com.triveglobal.challenge.model.Book
@@ -7,7 +7,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
 
-class RetrofitNetworkAPI @Inject constructor(@BackendBaseUrl private val backendBaseUrl: String) : NetworkAPI{
+class RetrofitRemoteBookDataSource @Inject constructor(@BackendBaseUrl private val backendBaseUrl: String) :
+    RemoteBookDataSource  {
 
     private val backendAPI  by lazy {
         Retrofit.Builder()
@@ -17,8 +18,8 @@ class RetrofitNetworkAPI @Inject constructor(@BackendBaseUrl private val backend
             .create(BackendAPI::class.java)
     }
 
-    override suspend fun addBook(book: Book) {
-        backendAPI.addBook(book)
+    override suspend fun saveBook(book: Book) {
+        backendAPI.saveBook(book)
     }
 
     override suspend fun deleteBook(book: Book) {

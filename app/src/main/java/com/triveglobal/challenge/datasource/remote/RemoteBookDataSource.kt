@@ -1,10 +1,10 @@
-package com.triveglobal.challenge.network
+package com.triveglobal.challenge.datasource.remote
 
 import com.triveglobal.challenge.model.Book
 
-interface NetworkAPI {
+interface RemoteBookDataSource {
 
-    suspend fun addBook(book: Book)
+    suspend fun saveBook(book: Book)
 
     suspend fun deleteBook(book: Book)
 

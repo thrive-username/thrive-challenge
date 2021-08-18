@@ -7,6 +7,7 @@ plugins {
 object Libs {
     const val COMPOSE_VERSION = "1.0.0"
     const val DAGGER_VERSION  = "2.38.1"
+    const val ROOM_VERSION = "2.3.0"
 }
 
 android {
@@ -35,6 +36,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xopt-in=kotlin.time.ExperimentalTime" //Needed for turbine
     }
 
     flavorDimensions("default")
@@ -56,7 +58,11 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://ivy-ios-challenge.herokuapp.com/index.html\"")
         }
     }
+
+
+
 }
+
 
 dependencies {
 
@@ -80,7 +86,15 @@ dependencies {
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.5.0")
+    //Room
+    implementation("androidx.room:room-runtime:${Libs.ROOM_VERSION}")
+    implementation("androidx.room:room-ktx:${Libs.ROOM_VERSION}")
+    kapt("androidx.room:room-compiler:${Libs.ROOM_VERSION}")
 
     //Testing
-    testImplementation("junit:junit:4.+")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:3.11.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1")
+    testImplementation("app.cash.turbine:turbine:0.6.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
 }
