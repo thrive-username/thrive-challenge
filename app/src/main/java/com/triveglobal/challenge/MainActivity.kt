@@ -1,5 +1,5 @@
  package com.triveglobal.challenge
 
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 
- class MainActivity : ComponentActivity(R.layout.support_simple_spinner_dropdown_item)
+ class MainActivity : FragmentActivity(R.layout.main_activity)

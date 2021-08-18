@@ -2,23 +2,21 @@ package com.triveglobal.challenge.repositories
 
 import com.triveglobal.challenge.datasource.local.LocalBookDataSource
 import com.triveglobal.challenge.datasource.remote.RemoteBookDataSource
+import com.triveglobal.challenge.di.qualifiers.IODispatcher
 import com.triveglobal.challenge.model.Book
 import com.triveglobal.challenge.model.DateTimeProvider
 import com.triveglobal.challenge.model.ResourceState
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.lastOrNull
-import java.lang.IllegalArgumentException
-import java.lang.RuntimeException
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 class BookRepository @Inject constructor(
     private val remoteBookDataSource: RemoteBookDataSource,
     private val localBookDataSource: LocalBookDataSource,
-    private val coroutineDispatcher: CoroutineDispatcher,
+    @IODispatcher private val coroutineDispatcher: CoroutineDispatcher,
     private val dateTimeProvider: DateTimeProvider
 ) {
 
@@ -26,13 +24,16 @@ class BookRepository @Inject constructor(
     private val scope = CoroutineScope(coroutineDispatcher)
     private val booksResourceFlow = MutableStateFlow(ResourceState<List<Book>>())
 
-    private suspend fun performCrudOperation(throwError: Boolean = false, operation: suspend () -> Unit) {
+    private suspend fun performCrudOperation(
+        throwError: Boolean = false,
+        operation: suspend () -> Unit
+    ) {
         val currentResourceState = booksResourceFlow.value.copy(loading = true, error = null)
         booksResourceFlow.emit(currentResourceState)
         try {
             operation()
             booksResourceFlow.emit(ResourceState(localBookDataSource.getAllBooks()))
-        }catch (error: Exception) {
+        } catch (error: Exception) {
             booksResourceFlow.emit(currentResourceState.copy(loading = false, error = error))
             if (throwError) throw error
         }
@@ -45,7 +46,7 @@ class BookRepository @Inject constructor(
     /**
      * @return stream of list of available [Book]
      */
-    fun booksStream (): Flow<ResourceState<List<Book>>> {
+    fun booksStream(): Flow<ResourceState<List<Book>>> {
         return booksResourceFlow
     }
 
@@ -55,8 +56,8 @@ class BookRepository @Inject constructor(
     fun refresh() {
         //If we are already refreshing discard this call
         if (booksResourceFlow.value.loading) return
-        scope.launch{
-            performCrudOperation{
+        scope.launch {
+            performCrudOperation {
                 val remoteBooks = remoteBookDataSource.getAllBooks()
                 remoteBooks.forEach { book ->
                     localBookDataSource.saveOrUpdateBook(book)
@@ -69,7 +70,7 @@ class BookRepository @Inject constructor(
      * Adds a new book on the backend, updating the local data source
      */
     suspend fun addBook(book: Book) {
-        performCrudOperation(true){
+        performCrudOperation(true) {
             val remoteBook = remoteBookDataSource.saveBook(book)
             localBookDataSource.saveOrUpdateBook(remoteBook)
         }
@@ -80,9 +81,12 @@ class BookRepository @Inject constructor(
      * has been checked out by [checkedOutBy] using the current time
      * on this device
      */
-    suspend fun checkOutBook(book: Book, checkedOutBy: String){
-        performCrudOperation(true){
-            val bookToUpdate = book.copy(lastCheckedOutBy = checkedOutBy, lastCheckedOut = dateTimeProvider.currentDateTime)
+    suspend fun checkOutBook(book: Book, checkedOutBy: String) {
+        performCrudOperation(true) {
+            val bookToUpdate = book.copy(
+                lastCheckedOutBy = checkedOutBy,
+                lastCheckedOut = dateTimeProvider.currentDateTime
+            )
             remoteBookDataSource.updateBook(bookToUpdate)
             localBookDataSource.saveOrUpdateBook(bookToUpdate)
         }
@@ -93,7 +97,7 @@ class BookRepository @Inject constructor(
      * @throws IllegalArgumentException if the[book] doesn't have an id
      */
     suspend fun removeBook(book: Book) {
-        performCrudOperation(true){
+        performCrudOperation(true) {
             if (book.id == null) throw IllegalArgumentException("Book $book doesn't have an id")
             remoteBookDataSource.deleteBook(book)
             localBookDataSource.deleteBook(book)
@@ -104,7 +108,7 @@ class BookRepository @Inject constructor(
      * Removes all books from the backend and then update the local data source
      */
     suspend fun removeAllBooks() {
-        performCrudOperation(true){
+        performCrudOperation(true) {
             remoteBookDataSource.deleteAllBooks()
             localBookDataSource.deleteAllBooks()
         }

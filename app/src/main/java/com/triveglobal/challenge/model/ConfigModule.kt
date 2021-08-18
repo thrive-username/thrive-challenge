@@ -2,8 +2,11 @@ package com.triveglobal.challenge.model
 
 import com.triveglobal.challenge.BuildConfig
 import com.triveglobal.challenge.di.qualifiers.BackendBaseUrl
+import com.triveglobal.challenge.di.qualifiers.IODispatcher
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import org.joda.time.DateTime
 
 @Module
@@ -18,5 +21,9 @@ class ConfigModule {
         override val currentDateTime: DateTime
             get() = DateTime.now()
     }
+
+    @IODispatcher
+    @Provides
+    fun provideIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 
 }

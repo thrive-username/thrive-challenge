@@ -25,6 +25,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildTypes {
@@ -62,6 +67,10 @@ android {
         }
     }
 
+    kapt {
+        correctErrorTypes = true //Needed for AssistedInjection
+    }
+
 
 
 }
@@ -82,6 +91,7 @@ dependencies {
     implementation("com.google.dagger:dagger:${Libs.DAGGER_VERSION}")
     implementation("com.google.dagger:dagger-android-support:${Libs.DAGGER_VERSION}")
     kapt("com.google.dagger:dagger-compiler:${Libs.DAGGER_VERSION}")
+    kapt("com.google.dagger:dagger-android-processor:${Libs.DAGGER_VERSION}")
     //Jodatime
     implementation("joda-time:joda-time:2.10.10")
     //Coroutines
