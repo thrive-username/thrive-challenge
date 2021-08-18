@@ -63,7 +63,7 @@ android {
     }
     productFlavors {
         create("sandbox") {
-            buildConfigField("String", "BASE_URL", "\"https://ivy-ios-challenge.herokuapp.com/index.html\"")
+            buildConfigField("String", "BASE_URL", "\"https://ivy-ios-challenge.herokuapp.com/\"")
         }
     }
 
@@ -85,6 +85,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:${Libs.COMPOSE_VERSION}")
     implementation("androidx.compose.material:material:${Libs.COMPOSE_VERSION}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Libs.COMPOSE_VERSION}")
+    implementation("androidx.compose.runtime:runtime-livedata:${Libs.COMPOSE_VERSION}")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
     implementation("androidx.activity:activity-compose:1.3.1")
     //Dagger
@@ -99,6 +100,7 @@ dependencies {
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.5.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.2.1")
     //Room
     implementation("androidx.room:room-runtime:${Libs.ROOM_VERSION}")
     implementation("androidx.room:room-ktx:${Libs.ROOM_VERSION}")
