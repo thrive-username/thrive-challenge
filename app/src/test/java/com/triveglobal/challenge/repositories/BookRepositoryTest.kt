@@ -1,12 +1,12 @@
-package com.triveglobal.challenge.com.triveglobal.challenge.repositories
+package com.triveglobal.challenge.repositories
 
 import app.cash.turbine.test
+import com.triveglobal.challenge.BookMockHelper.createBook
 import com.triveglobal.challenge.datasource.local.LocalBookDataSource
 import com.triveglobal.challenge.datasource.remote.RemoteBookDataSource
 import com.triveglobal.challenge.model.Book
 import com.triveglobal.challenge.model.DateTimeProvider
 import com.triveglobal.challenge.model.ResourceState
-import com.triveglobal.challenge.repositories.BookRepository
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.equalTo
@@ -20,7 +20,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.argumentCaptor
-import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class BookRepositoryTest {
@@ -35,7 +34,6 @@ class BookRepositoryTest {
     private lateinit var dateTimeProvider: DateTimeProvider
     private val testCoroutineDispatcher = TestCoroutineDispatcher()
     private lateinit var bookRepository: BookRepository
-    private val random = Random()
 
     @Before
     fun setup() {
@@ -163,16 +161,5 @@ class BookRepositoryTest {
             cancelAndConsumeRemainingEvents()
         }
     }
-
-
-    private fun createBook() = Book(
-        "author${random.nextInt()}",
-        "categories${random.nextInt()}",
-        random.nextLong(),
-        null,
-        null,
-        "publisher${random.nextInt()}",
-        "title${random.nextInt()}"
-    )
 
 }

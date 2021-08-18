@@ -1,5 +1,6 @@
 package com.triveglobal.challenge.extensions
 
+import com.triveglobal.challenge.model.Constants.Date.FORMATTER
 import org.joda.time.DateTime
 
 /**
@@ -7,5 +8,5 @@ import org.joda.time.DateTime
  * using the following format yyyy-MM-dd HH:mm:ss zzz
  */
 fun DateTime?.serializeToString(): String? {
-    TODO()
+    return this?.let { FORMATTER.print(it) }
 }
