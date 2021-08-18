@@ -8,6 +8,9 @@ object Libs {
     const val COMPOSE_VERSION = "1.0.0"
     const val DAGGER_VERSION  = "2.38.1"
     const val ROOM_VERSION = "2.3.0"
+    object Jetpack {
+        const val NAVIGATION_VERSION = "2.3.5"
+    }
 }
 
 android {
@@ -90,6 +93,10 @@ dependencies {
     implementation("androidx.room:room-runtime:${Libs.ROOM_VERSION}")
     implementation("androidx.room:room-ktx:${Libs.ROOM_VERSION}")
     kapt("androidx.room:room-compiler:${Libs.ROOM_VERSION}")
+    //Jetpack navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:${Libs.Jetpack.NAVIGATION_VERSION}")
+    implementation("androidx.navigation:navigation-ui-ktx:${Libs.Jetpack.NAVIGATION_VERSION}")
+
 
     //Testing
     testImplementation("junit:junit:4.13.2")
