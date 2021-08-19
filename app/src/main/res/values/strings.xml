@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Challenge</string>
+    <!-- Feed -->
+    <string name="book_feed_title">Books</string>
+    <string name="book_feed_author_template">Author: %1$s</string>
+    <string name="book_feed_loading_content">Loading Content&#8230;</string>
+    <string name="book_feed_empty_message">Hmmm&#8230;it seems there are no books loaded, try to sync or a new book yourself!</string>
+    <!-- General -->
+    <string name="dialog_error_title">Error</string>
 </resources>

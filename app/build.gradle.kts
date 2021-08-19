@@ -77,7 +77,6 @@ android {
 
 
 dependencies {
-
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("com.google.android.material:material:1.4.0")
@@ -86,6 +85,7 @@ dependencies {
     implementation("androidx.compose.material:material:${Libs.COMPOSE_VERSION}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Libs.COMPOSE_VERSION}")
     implementation("androidx.compose.runtime:runtime-livedata:${Libs.COMPOSE_VERSION}")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
     implementation("androidx.activity:activity-compose:1.3.1")
     //Dagger
