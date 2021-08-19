@@ -6,7 +6,19 @@
 
     <fragment
         android:id="@+id/bookFeedFragment"
-        android:name="com.triveglobal.challenge.ui.feed.BookFeedFragment"
-        android:label="" />
+        android:name="com.triveglobal.challenge.ui.feed.BookFeedFragment">
+        <action
+            android:id="@+id/action_feed_to_details"
+            app:destination="@id/bookDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookDetailsFragment"
+        android:name="com.triveglobal.challenge.ui.detail.BookDetailsFragment">
+        <argument
+            android:name="book"
+            app:argType="com.triveglobal.challenge.model.Book"
+            app:nullable="false" />
+    </fragment>
 
 </navigation>

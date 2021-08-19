@@ -13,14 +13,6 @@ interface SavedStateViewModelFactory<T : ViewModel> {
     fun create(savedStateHandle: SavedStateHandle): T
 }
 
-
-inline fun <reified VM : ViewModel> ComponentActivity.assistedViewModel(
-    crossinline viewModelProducer: (SavedStateHandle) -> VM,
-): Lazy<VM> = lazy {
-    ViewModelProvider(this,createSavedStateViewModelFactory(intent.extras, viewModelProducer))
-        .get(VM::class.java)
-}
-
 inline fun <reified VM : ViewModel> Fragment.assistedViewModel(
     crossinline viewModelProducer: (SavedStateHandle) -> VM,
 ): Lazy<VM> = lazy {

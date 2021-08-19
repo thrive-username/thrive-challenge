@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id ("kotlin-kapt")
+    id("kotlin-parcelize")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 object Libs {
@@ -106,7 +108,7 @@ dependencies {
     implementation("androidx.room:room-ktx:${Libs.ROOM_VERSION}")
     kapt("androidx.room:room-compiler:${Libs.ROOM_VERSION}")
     //Jetpack navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:${Libs.Jetpack.NAVIGATION_VERSION}")
+    implementation(Libraries.Jetpack.Navigation.fragment)
     implementation("androidx.navigation:navigation-ui-ktx:${Libs.Jetpack.NAVIGATION_VERSION}")
 
 

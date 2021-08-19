@@ -5,6 +5,7 @@ import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.fragment.findNavController
 import com.triveglobal.challenge.R
 import com.triveglobal.challenge.model.Book
 import com.triveglobal.challenge.ui.common.ErrorDialog
@@ -87,7 +89,11 @@ class BookFeedFragment : DaggerFragment() {
     @Composable
     private fun BookFeed(books: List<Book>) {
         LazyColumn {
-            items(books) { BookShortSummary(it) }
+            items(books) {
+                BookShortSummary(it) { book ->
+                    findNavController().navigate(BookFeedFragmentDirections.actionFeedToDetails(book))
+                }
+            }
         }
     }
 
@@ -122,8 +128,10 @@ class BookFeedFragment : DaggerFragment() {
     }
 
     @Composable
-    private fun BookShortSummary(book: Book) {
-        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+    private fun BookShortSummary(book: Book, onClick: (Book) -> Unit) {
+        ConstraintLayout(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick(book) }) {
             val (title, author) = createRefs()
             Text(
                 text = book.title,
