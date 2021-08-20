@@ -16,4 +16,8 @@
     <string name="book_details_publisher_template">Publisher: %1$s</string>
     <string name="book_details_categories_template">Categories: %1$s</string>
     <string name="book_details_checkout_template">Last Checked Out:\n %1$s @ %2$s</string>
+    <string name="book_details_checkout_button">Checkout</string>
+    <string name="book_details_checkout_dialog_title">Checked out by:</string>
+    <string name="submit">Submit</string>
+    <string name="submitting">Submitting&#8230;</string>
 </resources>

@@ -27,7 +27,6 @@ fun ErrorDialog(exception: Exception, onDismiss: () -> Unit, content: @Composabl
     )
 }
 
-@Preview
 @Composable
 fun LoadingDialog(message: String) {
     AlertDialog(

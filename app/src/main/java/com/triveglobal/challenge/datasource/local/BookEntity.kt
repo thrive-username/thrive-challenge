@@ -18,14 +18,15 @@ data class BookEntity(@ColumnInfo val author: String,
                       @ColumnInfo val title: String) {
 
     companion object {
+        /**
+         * @throws IllegalArgumentException if the [book].id is null
+         */
         fun toEntity(book: Book) = book.run {
             if (id == null) throw IllegalArgumentException("A book entity requires a non-null ID")
             BookEntity(author, categories, id, lastCheckedOut.serializeToString(), lastCheckedOutBy, publisher, title)
         }
-
-        fun toBook(bookEntity: BookEntity) = bookEntity.run {
-            Book(author, categories, id, lastCheckedOutBy.parseDateTime(), lastCheckedOutBy, publisher, title)
-        }
     }
+
+    fun toBook() = Book(author, categories, id, lastCheckedOut.parseDateTime(), lastCheckedOutBy, publisher, title)
 
 }

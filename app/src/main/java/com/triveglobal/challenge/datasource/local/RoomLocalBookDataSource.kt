@@ -1,7 +1,6 @@
 package com.triveglobal.challenge.datasource.local
 
 import android.content.Context
-import com.triveglobal.challenge.datasource.local.BookEntity.Companion.toBook
 import com.triveglobal.challenge.datasource.local.BookEntity.Companion.toEntity
 import com.triveglobal.challenge.di.qualifiers.ApplicationContext
 import com.triveglobal.challenge.model.Book
@@ -24,7 +23,7 @@ class RoomLocalBookDataSource @Inject constructor(@ApplicationContext private va
     }
 
     override suspend fun getAllBooks(): List<Book> {
-        return bookDao.getAllBooks().map { toBook(it) }
+        return bookDao.getAllBooks().map { it.toBook() }
     }
 
 
