@@ -21,12 +21,10 @@ import org.mockito.kotlin.doThrow
 @RunWith(MockitoJUnitRunner::class)
 class BookDetailsViewModelTest {
 
-
     @get:Rule
     val errorCollector = ErrorCollector()
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
-
     @Mock
     private lateinit var bookRepository: BookRepository
     private val book = BookMockHelper.createBook()
