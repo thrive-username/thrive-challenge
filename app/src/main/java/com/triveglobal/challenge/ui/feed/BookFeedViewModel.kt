@@ -22,7 +22,7 @@ class BookFeedViewModel @AssistedInject constructor(
     }
 
     init {
-        bookRepository.refresh() //TODO: Not always needed
+        bookRepository.load()
     }
 
     fun onErrorDismissed() {

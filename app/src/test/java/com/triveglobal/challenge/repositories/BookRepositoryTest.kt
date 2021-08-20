@@ -43,7 +43,7 @@ class BookRepositoryTest {
 
 
     @Test
-    fun `BookStream Default with null data, not loading and no error`() = runBlockingTest {
+    fun `BookStream Default with null data, not loading and no error`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         flow.test {
             errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
@@ -52,13 +52,29 @@ class BookRepositoryTest {
     }
 
     @Test
-    fun `refresh, Network Call Error and then 2 items state emitted, no interaction with local data source`() =
-        runBlockingTest {
+    fun `load, emit 2 states, with books from local data source, no interaction with remote data source`() =
+        testCoroutineDispatcher.runBlockingTest {
+            val flow = bookRepository.booksStream()
+            val books = listOf(createBook(), createBook())
+            doReturn(books).`when`(localBookDataSource).getAllBooks()
+            flow.test {
+                bookRepository.load()
+                errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
+                errorCollector.checkThat(awaitItem(), equalTo(ResourceState(loading = true)))
+                errorCollector.checkThat(awaitItem(), equalTo(ResourceState(data = books)))
+                verifyNoInteractions(remoteBookDataSource)
+                cancelAndConsumeRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `synchronize, Network Call Error and then 2 items state emitted, no interaction with local data source`() =
+        testCoroutineDispatcher.runBlockingTest {
             val flow = bookRepository.booksStream()
             val error = RuntimeException("Some Network Error")
             doThrow(error).`when`(remoteBookDataSource).getAllBooks()
             flow.test {
-                bookRepository.refresh()
+                bookRepository.synchronize()
                 errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
                 errorCollector.checkThat(awaitItem(), equalTo(ResourceState(loading = true)))
                 errorCollector.checkThat(awaitItem(), equalTo(ResourceState(error = error)))
@@ -68,14 +84,14 @@ class BookRepositoryTest {
         }
 
     @Test
-    fun `refresh, Network Call Success and then 2 items state emitted, all books saved on local data source`() =
-        runBlockingTest {
+    fun `synchronize, Network Call Success and then 2 items state emitted, all books saved on local data source`() =
+        testCoroutineDispatcher.runBlockingTest {
             val flow = bookRepository.booksStream()
             val books = listOf(createBook(), createBook(), createBook())
             doReturn(books).`when`(remoteBookDataSource).getAllBooks()
             doReturn(books).`when`(localBookDataSource).getAllBooks()
             flow.test {
-                bookRepository.refresh()
+                bookRepository.synchronize()
                 errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
                 errorCollector.checkThat(awaitItem(), equalTo(ResourceState(loading = true)))
                 errorCollector.checkThat(awaitItem(), equalTo(ResourceState(data = books)))
@@ -87,7 +103,7 @@ class BookRepositoryTest {
         }
 
     @Test(expected = RuntimeException::class)
-    fun `addBook, Network Call Error and then 2 items state emitted, no interaction with local data source`() = runBlockingTest {
+    fun `addBook, Network Call Error and then 2 items state emitted, no interaction with local data source`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         val book = createBook()
         val error = RuntimeException("Some Network Error")
@@ -103,7 +119,7 @@ class BookRepositoryTest {
     }
 
     @Test
-    fun `addBook, Network Call Success and then 2 items state emitted, remote book store on local data source`() = runBlockingTest {
+    fun `addBook, Network Call Success and then 2 items state emitted, remote book store on local data source`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         val remoteBook = createBook()
         val book = createBook()
@@ -121,7 +137,7 @@ class BookRepositoryTest {
     }
 
     @Test
-    fun `checkOutBook, Network call updating the checkout name and date, Success, update local data source, book update returned`() = runBlockingTest {
+    fun `checkOutBook, Network call updating the checkout name and date, Success, update local data source, book update returned`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         val book = createBook()
         val currentDateTime = DateTime.now().minusDays(1)
@@ -142,7 +158,7 @@ class BookRepositoryTest {
     }
 
     @Test(expected = RuntimeException::class)
-    fun `checkOutBook, Network call updating the checkout name and date, Error, local data source not invoked`() = runBlockingTest {
+    fun `checkOutBook, Network call updating the checkout name and date, Error, local data source not invoked`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         val book = createBook()
         val error = RuntimeException("Some Network Error")
@@ -163,7 +179,7 @@ class BookRepositoryTest {
     }
 
     @Test
-    fun `removeBook, with Id, Network call success, 2 states emitted, local data source updated`() = runBlockingTest {
+    fun `removeBook, with Id, Network call success, 2 states emitted, local data source updated`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         val book = createBook()
         val booksStored = listOf(createBook(), createBook())
@@ -180,7 +196,7 @@ class BookRepositoryTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `removeBook, without Id, throw error, no new state emitted, no interaction with local or remote data sources`() = runBlockingTest {
+    fun `removeBook, without Id, throw error, no new state emitted, no interaction with local or remote data sources`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         val book = createBook(id = null)
         flow.test {
@@ -193,7 +209,7 @@ class BookRepositoryTest {
     }
 
     @Test(expected = RuntimeException::class)
-    fun `removeBook, with Id, network error,2 new states emitted, throw error, no interaction with local data sources`() = runBlockingTest {
+    fun `removeBook, with Id, network error,2 new states emitted, throw error, no interaction with local data sources`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         val book = createBook()
         val error = RuntimeException("Some Network Error")
@@ -209,7 +225,7 @@ class BookRepositoryTest {
     }
 
     @Test
-    fun `removeAllBooks, network success, 2 new states emitted, update local data source`() = runBlockingTest {
+    fun `removeAllBooks, network success, 2 new states emitted, update local data source`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         val booksStored = listOf<Book>()
         doReturn(booksStored).`when`(localBookDataSource).getAllBooks()
@@ -225,7 +241,7 @@ class BookRepositoryTest {
     }
 
     @Test(expected = RuntimeException::class)
-    fun `removeAllBooks, network error, throw error, 2 new states emitted, no interaction with local data source`() = runBlockingTest {
+    fun `removeAllBooks, network error, throw error, 2 new states emitted, no interaction with local data source`() = testCoroutineDispatcher.runBlockingTest {
         val flow = bookRepository.booksStream()
         val error = RuntimeException("Some Network Error")
         doThrow(error).`when`(remoteBookDataSource).deleteAllBooks()
