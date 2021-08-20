@@ -1,5 +1,7 @@
 package com.triveglobal.challenge.ui.detail
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +21,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -55,13 +58,15 @@ class BookDetailsFragment : DaggerFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return ComposeView(requireContext()).apply {
-            setContent { DetailContent(viewModel, dateFormatter, findNavController()) }
+        val context = requireContext()
+        return ComposeView(context).apply {
+            setContent { DetailContent(context, viewModel, dateFormatter, findNavController()) }
         }
     }
 
     @Composable
     private fun DetailContent(
+        context: Context,
         viewModel: BookDetailsViewModel,
         dateFormatter: DateTimeFormatter,
         navController: NavController
@@ -76,6 +81,16 @@ class BookDetailsFragment : DaggerFragment() {
                 },
                 {
                     navController.popBackStack()
+                },
+                { book ->
+                    val text = getString(R.string.book_detail_share_template, book.title)
+                    val shareIntent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, text)
+                        type = "text/plain"
+                    }
+                    val intentChooser = Intent.createChooser(shareIntent, null)
+                    context.startActivity(intentChooser)
                 })
         }
         if (showCheckoutDialog.value) {
@@ -95,7 +110,8 @@ class BookDetailsFragment : DaggerFragment() {
         uiModel: BookDetailsUIModel,
         dateFormatter: DateTimeFormatter,
         checkoutClicked: () -> Unit,
-        onBackClicked: () -> Unit
+        onBackClicked: () -> Unit,
+        onShareClicked: (Book) -> Unit
     ) {
         ChallengeTheme {
             Column(Modifier.fillMaxHeight()) {
@@ -109,7 +125,11 @@ class BookDetailsFragment : DaggerFragment() {
                         )
                     },
                     actions = {
-                        //TODO: Add share button
+                        Image(
+                            painter = painterResource(R.drawable.ic_share),
+                            contentDescription = stringResource(R.string.book_details_share),
+                            modifier = Modifier.clickable { onShareClicked(uiModel.book) }
+                        )
                     }
                 )
                 BookDetails(uiModel.book, Modifier.weight(1F), dateFormatter)
@@ -217,6 +237,6 @@ class BookDetailsFragment : DaggerFragment() {
     @Composable
     private fun Preview() {
         val book = Book("Author", "Categories", 1, null, null, "Publisher", "Title")
-        RenderUIModel(BookDetailsUIModel(book, null, false, false), dateFormatter, {}, {})
+        RenderUIModel(BookDetailsUIModel(book, null, false, false), dateFormatter, {}, {}, {})
     }
 }

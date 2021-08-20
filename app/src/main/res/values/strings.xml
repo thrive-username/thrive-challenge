@@ -9,6 +9,8 @@
     <string name="book_feed_synchronize">Synchronize Books</string>
     <string name="book_details_check_out_message">Checking out&#8230;</string>
     <string name="book_details_tile">Book Details</string>
+    <string name="book_details_share">Share Book</string>
+    <string name="book_detail_share_template">I think \"%1$s\" is going to be my next book to read!</string>
     <!-- General -->
     <string name="dialog_error_title">Error</string>
     <string name="dialog_loading_title">Sending Data</string>
