@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 open class BookRepository @Inject constructor(
     private val remoteBookDataSource: RemoteBookDataSource,
     private val localBookDataSource: LocalBookDataSource,

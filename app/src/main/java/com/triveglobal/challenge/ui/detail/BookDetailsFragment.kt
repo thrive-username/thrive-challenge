@@ -155,6 +155,7 @@ class BookDetailsFragment : DaggerFragment() {
                                 modifier = Modifier.focusTarget(),
                                 onValueChange = { checkoutName.value = it }
                             )
+                            Spacer(modifier = Modifier.height(10.dp))
                             Button(
                                 onClick = { onSubmit(checkoutName.value) },
                                 modifier = Modifier.align(CenterHorizontally),

@@ -10,7 +10,7 @@ object Constants {
     }
 
     object Date {
-        val FORMATTER: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss zzz")
+        val FORMATTER: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss zzz").withZoneUTC()
     }
 
 }
