@@ -5,7 +5,15 @@
     <string name="book_feed_author_template">Author: %1$s</string>
     <string name="book_feed_loading_content">Loading Content&#8230;</string>
     <string name="book_feed_empty_message">Hmmm&#8230;it seems there are no books loaded, try to sync or add new book yourself!</string>
+    <!-- Details -->
+    <string name="book_feed_synchronize">Synchronize Books</string>
+    <string name="book_details_check_out_message">Checking out&#8230;</string>
+    <string name="book_details_tile">Book Details</string>
     <!-- General -->
     <string name="dialog_error_title">Error</string>
-    <string name="book_feed_synchronize">Synchronize Books</string>
+    <string name="dialog_loading_title">Sending Data</string>
+    <string name="back">Back</string>
+    <string name="book_details_publisher_template">Publisher: %1$s</string>
+    <string name="book_details_categories_template">Categories: %1$s</string>
+    <string name="book_details_checkout_template">Last Checked Out:\n %1$s @ %2$s</string>
 </resources>

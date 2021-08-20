@@ -54,9 +54,10 @@ class BookFeedFragment : DaggerFragment() {
     }
 
     @Composable
-    fun FeedContent(viewModel: BookFeedViewModel, navController: NavController){
-        val uiModel = viewModel.uiModelLiveData.observeAsState(BookFeedUIModel())
-        RenderUIModel(uiModel.value, { navController.navigate(BookFeedFragmentDirections.actionFeedToDetails(it)) }, { viewModel.synchronize() })
+    private fun FeedContent(viewModel: BookFeedViewModel, navController: NavController){
+        viewModel.uiModelLiveData.observeAsState().value?.let { uiModel ->
+            RenderUIModel(uiModel, { navController.navigate(BookFeedFragmentDirections.actionFeedToDetails(it)) }, { viewModel.synchronize() })
+        }
     }
 
     @Composable
