@@ -142,10 +142,9 @@ class BookDetailsFragment : DaggerFragment() {
                 Spacer(modifier = Modifier.height(30.dp))
             }
             if (uiModel.loading) {
-                LoadingDialog(message = stringResource(id = R.string.book_details_check_out_message))
-            }
-            if (uiModel.displaySuccessMessage) {
+                LoadingDialog(message = stringResource(id = R.string.book_details_check_out_message)){
 
+                }
             }
         }
     }
@@ -237,6 +236,6 @@ class BookDetailsFragment : DaggerFragment() {
     @Composable
     private fun Preview() {
         val book = Book("Author", "Categories", 1, null, null, "Publisher", "Title")
-        RenderUIModel(BookDetailsUIModel(book, null, false, false), dateFormatter, {}, {}, {})
+        RenderUIModel(BookDetailsUIModel(book, null, false), dateFormatter, {}, {}, {})
     }
 }

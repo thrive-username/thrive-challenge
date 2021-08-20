@@ -4,11 +4,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,16 +19,22 @@ import java.lang.Exception
 fun ErrorDialog(exception: Exception, onDismiss: () -> Unit, content: @Composable () -> Unit = { DefaultErrorMessage(exception) }) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        title = { Text(style = MaterialTheme.typography.h1, text = stringResource(id = R.string.dialog_error_title)) },
+        title = { Text(style = MaterialTheme.typography.h4, text = stringResource(id = R.string.dialog_error_title)) },
         text = { content() },
-        confirmButton = {},
+        confirmButton = {
+            Button(
+                onClick = { onDismiss() }
+            ) {
+                Text(text = stringResource(R.string.ok))
+            }
+        },
     )
 }
 
 @Composable
-fun LoadingDialog(message: String) {
+fun LoadingDialog(message: String, onDismiss: () -> Unit) {
     AlertDialog(
-        onDismissRequest = { },
+        onDismissRequest = { onDismiss() },
         title = { Text(style = MaterialTheme.typography.h1, text = stringResource(id = R.string.dialog_loading_title)) },
         text = {
                Row {
@@ -50,7 +54,8 @@ fun LoadingDialog(message: String) {
                    )
                }
         },
-        confirmButton = {},
+        confirmButton = {
+        },
     )
 }
 

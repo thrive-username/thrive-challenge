@@ -45,7 +45,6 @@ class BookDetailsViewModelTest {
             errorCollector.checkThat(book, equalTo(book))
             errorCollector.checkThat(error, nullValue())
             errorCollector.checkThat(loading, equalTo(false))
-            errorCollector.checkThat(displaySuccessMessage, equalTo(false))
         }
     }
 
@@ -58,7 +57,6 @@ class BookDetailsViewModelTest {
             errorCollector.checkThat(book, equalTo(book))
             errorCollector.checkThat(error, instanceOf(IllegalArgumentException::class.java))
             errorCollector.checkThat(loading, equalTo(false))
-            errorCollector.checkThat(displaySuccessMessage, equalTo(false))
         }
     }
 
@@ -73,13 +71,11 @@ class BookDetailsViewModelTest {
             errorCollector.checkThat(book, equalTo(book))
             errorCollector.checkThat(error, nullValue())
             errorCollector.checkThat(loading, equalTo(true))
-            errorCollector.checkThat(displaySuccessMessage, equalTo(false))
         }
         liveDataTestObserver.emittedValues[2]?.apply {
             errorCollector.checkThat(book, equalTo(updateBook))
             errorCollector.checkThat(error, nullValue())
             errorCollector.checkThat(loading, equalTo(false))
-            errorCollector.checkThat(displaySuccessMessage, equalTo(true))
         }
     }
 
@@ -94,13 +90,11 @@ class BookDetailsViewModelTest {
             errorCollector.checkThat(book, equalTo(book))
             errorCollector.checkThat(error, nullValue())
             errorCollector.checkThat(loading, equalTo(true))
-            errorCollector.checkThat(displaySuccessMessage, equalTo(false))
         }
         liveDataTestObserver.emittedValues[2]?.apply {
             errorCollector.checkThat(book, equalTo(book))
             errorCollector.checkThat(error, equalTo(repositoryError))
             errorCollector.checkThat(loading, equalTo(false))
-            errorCollector.checkThat(displaySuccessMessage, equalTo(false))
         }
     }
 
@@ -113,20 +107,6 @@ class BookDetailsViewModelTest {
             errorCollector.checkThat(book, equalTo(book))
             errorCollector.checkThat(error, nullValue())
             errorCollector.checkThat(loading, equalTo(false))
-            errorCollector.checkThat(displaySuccessMessage, equalTo(false))
-        }
-    }
-
-    @Test
-    fun `success message displayed, invoke onSuccessMessageDisplayed, state without success message flag is emitted`() {
-        `checkOut with valid name, no error on repository, 2 states emitted, loading and success`()
-        bookDetailsViewModel.onSuccessMessageDisplayed()
-        errorCollector.checkThat(4, equalTo(liveDataTestObserver.emittedValues.size))
-        liveDataTestObserver.emittedValues[3]?.apply {
-            errorCollector.checkThat(book, equalTo(book))
-            errorCollector.checkThat(error, nullValue())
-            errorCollector.checkThat(loading, equalTo(false))
-            errorCollector.checkThat(displaySuccessMessage, equalTo(false))
         }
     }
 

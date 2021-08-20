@@ -38,7 +38,7 @@ class BookDetailsViewModel @AssistedInject constructor(
                 try {
                     val updatedBook = bookRepository.checkOutBook(book, name)
                     book = updatedBook
-                    _uiModelLiveData.copyAndTransformLastValue { copy(book = updatedBook, loading = false, displaySuccessMessage = true) }
+                    _uiModelLiveData.copyAndTransformLastValue { copy(book = updatedBook, loading = false) }
                 }catch (error: Exception) {
                     _uiModelLiveData.copyAndTransformLastValue { copy(error = error, loading = false) }
                 }
@@ -48,10 +48,6 @@ class BookDetailsViewModel @AssistedInject constructor(
 
     fun onErrorDismissed() {
         _uiModelLiveData.copyAndTransformLastValue { copy(error = null) }
-    }
-
-    fun onSuccessMessageDisplayed() {
-        _uiModelLiveData.copyAndTransformLastValue { copy(displaySuccessMessage = false) }
     }
 
     @AssistedFactory
