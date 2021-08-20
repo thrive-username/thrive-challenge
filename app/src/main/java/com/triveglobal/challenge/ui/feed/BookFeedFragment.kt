@@ -38,7 +38,7 @@ class BookFeedFragment : DaggerFragment() {
 
     @Inject
     lateinit var viewModelFactory: BookFeedViewModel.Factory
-    private val viewModel: BookFeedViewModel by assistedViewModel { viewModelFactory.create(it) }
+    private val viewModel: BookFeedViewModel by assistedViewModel { viewModelFactory.create() }
 
 
     override fun onCreateView(

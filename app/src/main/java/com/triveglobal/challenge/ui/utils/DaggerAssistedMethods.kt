@@ -1,17 +1,12 @@
 package com.triveglobal.challenge.ui.utils
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.savedstate.SavedStateRegistryOwner
-
-interface SavedStateViewModelFactory<T : ViewModel> {
-    fun create(savedStateHandle: SavedStateHandle): T
-}
 
 inline fun <reified VM : ViewModel> Fragment.assistedViewModel(
     crossinline viewModelProducer: (SavedStateHandle) -> VM,

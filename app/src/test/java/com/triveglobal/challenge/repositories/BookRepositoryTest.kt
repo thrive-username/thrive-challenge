@@ -121,7 +121,7 @@ class BookRepositoryTest {
     }
 
     @Test
-    fun `checkOutBook, Network call updating the checkout name and date, Success, update local data source`() = runBlockingTest {
+    fun `checkOutBook, Network call updating the checkout name and date, Success, update local data source, book update returned`() = runBlockingTest {
         val flow = bookRepository.booksStream()
         val book = createBook()
         val currentDateTime = DateTime.now().minusDays(1)
@@ -130,11 +130,11 @@ class BookRepositoryTest {
         val booksStored = listOf(createBook(), createBook(), checkedOutBy)
         doReturn(booksStored).`when`(localBookDataSource).getAllBooks()
         flow.test {
-            bookRepository.checkOutBook(book, checkedOutBy)
+            val updatedBook = bookRepository.checkOutBook(book, checkedOutBy)
             errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
             errorCollector.checkThat(awaitItem(), equalTo(ResourceState(loading = true)))
             errorCollector.checkThat(awaitItem(), equalTo(ResourceState(data = booksStored)))
-            val updatedBook = book.copy(lastCheckedOut = currentDateTime, lastCheckedOutBy = checkedOutBy)
+            errorCollector.checkThat(updatedBook, equalTo(book.copy(lastCheckedOut = currentDateTime, lastCheckedOutBy = checkedOutBy)))
             verify(remoteBookDataSource).updateBook(updatedBook)
             verify(localBookDataSource).saveOrUpdateBook(updatedBook)
             cancelAndConsumeRemainingEvents()

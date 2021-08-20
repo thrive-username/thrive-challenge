@@ -1,9 +1,8 @@
 package com.triveglobal.challenge.ui.feed
 
 import androidx.lifecycle.*
+import com.triveglobal.challenge.extensions.copyAndTransformLastValue
 import com.triveglobal.challenge.repositories.BookRepository
-import com.triveglobal.challenge.ui.utils.SavedStateViewModelFactory
-import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
@@ -11,8 +10,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class BookFeedViewModel @AssistedInject constructor(
-    private val bookRepository: BookRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    private val bookRepository: BookRepository
 ) : ViewModel() {
 
     private val _uiModelLiveData = MutableLiveData<BookFeedUIModel>()
@@ -28,7 +26,7 @@ class BookFeedViewModel @AssistedInject constructor(
     }
 
     fun onErrorDismissed() {
-        _uiModelLiveData.value = _uiModelLiveData.value?.copy(error = null)
+        _uiModelLiveData.copyAndTransformLastValue { copy(error = null) }
     }
 
     override fun onCleared() {
@@ -37,6 +35,8 @@ class BookFeedViewModel @AssistedInject constructor(
     }
 
     @AssistedFactory
-    interface Factory : SavedStateViewModelFactory<BookFeedViewModel>
+    interface Factory {
+        fun create(): BookFeedViewModel
+    }
 
 }

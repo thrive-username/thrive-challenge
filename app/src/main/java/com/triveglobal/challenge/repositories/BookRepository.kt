@@ -1,6 +1,5 @@
 package com.triveglobal.challenge.repositories
 
-import android.util.Log
 import com.triveglobal.challenge.datasource.local.LocalBookDataSource
 import com.triveglobal.challenge.datasource.remote.RemoteBookDataSource
 import com.triveglobal.challenge.di.qualifiers.IODispatcher
@@ -14,15 +13,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class BookRepository @Inject constructor(
+open class BookRepository @Inject constructor(
     private val remoteBookDataSource: RemoteBookDataSource,
     private val localBookDataSource: LocalBookDataSource,
-    @IODispatcher private val coroutineDispatcher: CoroutineDispatcher,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val dateTimeProvider: DateTimeProvider
 ) {
 
     //region Private Methods/Properties
-    private val scope = CoroutineScope(coroutineDispatcher)
+    private val scope = CoroutineScope(ioDispatcher)
     private val booksResourceFlow = MutableStateFlow(ResourceState<List<Book>>())
 
     private suspend fun performCrudOperation(
@@ -81,16 +80,18 @@ class BookRepository @Inject constructor(
      * Updates the backend indicating the [book]
      * has been checked out by [checkedOutBy] using the current time
      * on this device
+     * @return updated [Book]
      */
-    suspend fun checkOutBook(book: Book, checkedOutBy: String) {
+    open suspend fun checkOutBook(book: Book, checkedOutBy: String): Book {
+        val bookToUpdate = book.copy(
+            lastCheckedOutBy = checkedOutBy,
+            lastCheckedOut = dateTimeProvider.currentDateTime
+        )
         performCrudOperation(true) {
-            val bookToUpdate = book.copy(
-                lastCheckedOutBy = checkedOutBy,
-                lastCheckedOut = dateTimeProvider.currentDateTime
-            )
             remoteBookDataSource.updateBook(bookToUpdate)
             localBookDataSource.saveOrUpdateBook(bookToUpdate)
         }
+        return bookToUpdate
     }
 
     /**
