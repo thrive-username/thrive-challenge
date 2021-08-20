@@ -6,15 +6,6 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
 }
 
-object Libs {
-    const val COMPOSE_VERSION = "1.0.0"
-    const val DAGGER_VERSION  = "2.38.1"
-    const val ROOM_VERSION = "2.3.0"
-    object Jetpack {
-        const val NAVIGATION_VERSION = "2.3.5"
-    }
-}
-
 android {
     compileSdk = 30
 
@@ -29,7 +20,7 @@ android {
         }
         kapt {
             arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
+                arg("room.schemaLocation", "$projectDir/schemas") //We want to keep the schema versioning
             }
         }
     }
@@ -55,7 +46,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Libs.COMPOSE_VERSION
+        kotlinCompilerExtensionVersion = Libraries.Compose.version
         kotlinCompilerVersion = "1.5.10"
     }
     packagingOptions {
@@ -79,45 +70,34 @@ android {
 
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.6.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("com.google.android.material:material:1.4.0")
-    //Compose
-    implementation("androidx.compose.ui:ui:${Libs.COMPOSE_VERSION}")
-    implementation("androidx.compose.material:material:${Libs.COMPOSE_VERSION}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${Libs.COMPOSE_VERSION}")
-    implementation("androidx.compose.runtime:runtime-livedata:${Libs.COMPOSE_VERSION}")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.1")
-    //Dagger
-    implementation("com.google.dagger:dagger:${Libs.DAGGER_VERSION}")
-    implementation("com.google.dagger:dagger-android-support:${Libs.DAGGER_VERSION}")
-    kapt("com.google.dagger:dagger-compiler:${Libs.DAGGER_VERSION}")
-    kapt("com.google.dagger:dagger-android-processor:${Libs.DAGGER_VERSION}")
-    //Jodatime
-    implementation("joda-time:joda-time:2.10.10")
-    //Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
-    //Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.5.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.2.1")
-    //Room
-    implementation("androidx.room:room-runtime:${Libs.ROOM_VERSION}")
-    implementation("androidx.room:room-ktx:${Libs.ROOM_VERSION}")
-    kapt("androidx.room:room-compiler:${Libs.ROOM_VERSION}")
-    //Jetpack navigation
+    implementation(Libraries.AndroidX.core)
+    implementation(Libraries.AndroidX.appCompat)
+    implementation(Libraries.AndroidX.lifecycleRuntimeKtx)
+    implementation(Libraries.Google.material)
+    implementation(Libraries.Compose.ui)
+    implementation(Libraries.Compose.material)
+    debugCompileOnly(Libraries.Compose.toolingPreview)
+    implementation(Libraries.Compose.runtimeLiveData)
+    implementation(Libraries.Compose.constraintLayout)
+    implementation(Libraries.Compose.activity)
+    implementation(Libraries.Dagger.core)
+    implementation(Libraries.Dagger.androidSupport)
+    kapt(Libraries.Dagger.compiler)
+    kapt(Libraries.Dagger.androidProcessor)
+    implementation(Libraries.JodaTime.core)
+    implementation(Libraries.Jetbrains.kotlinCoroutines)
+    implementation(Libraries.Square.Retrofit.core)
+    implementation(Libraries.Square.Retrofit.gsonConverter)
+    implementation(Libraries.Square.OkHttp.loggingInterceptor)
+    implementation(Libraries.Jetpack.Room.runtime)
+    implementation(Libraries.Jetpack.Room.ktk)
+    kapt(Libraries.Jetpack.Room.compiler)
     implementation(Libraries.Jetpack.Navigation.fragment)
-    implementation("androidx.navigation:navigation-ui-ktx:${Libs.Jetpack.NAVIGATION_VERSION}")
-
-
-    //Testing
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:3.11.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1")
-    testImplementation("app.cash.turbine:turbine:0.6.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
-    testImplementation("org.mockito:mockito-core:3.11.2")
-    testImplementation("android.arch.core:core-testing:1.1.1")
+    implementation(Libraries.Jetpack.Navigation.uiKtx)
+    testImplementation(Testing.junit)
+    testImplementation(Testing.Mockito.core)
+    testImplementation(Testing.Mockito.kotlin)
+    testImplementation(Testing.kotlinCoroutines)
+    testImplementation(Testing.turbine)
+    testImplementation(Testing.androidArcCoreTesting)
 }

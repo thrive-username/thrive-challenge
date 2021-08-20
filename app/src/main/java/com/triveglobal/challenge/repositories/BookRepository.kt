@@ -26,8 +26,11 @@ open class BookRepository @Inject constructor(
     private val scope = CoroutineScope(ioDispatcher)
     private val booksResourceFlow = MutableStateFlow(ResourceState<List<Book>>())
 
+    /**
+     * @param throwError flag to indicate whether or  not the error should be thrown or hold inside the flow
+     */
     private suspend fun performCrudOperations(
-        throwError: Boolean = false,
+        throwError: Boolean,
         operation: suspend () -> Unit = {}
     ) {
         val currentResourceState = booksResourceFlow.value.copy(loading = true, error = null)
@@ -36,8 +39,12 @@ open class BookRepository @Inject constructor(
             operation()
             booksResourceFlow.emit(ResourceState(localBookDataSource.getAllBooks()))
         } catch (error: Exception) {
-            booksResourceFlow.emit(currentResourceState.copy(loading = false, error = error))
-            if (throwError) throw error
+            if (throwError) {
+                booksResourceFlow.emit(currentResourceState.copy(loading = false))
+                throw error
+            } else {
+                booksResourceFlow.emit(currentResourceState.copy(loading = false, error = error))
+            }
         }
     }
 
@@ -57,7 +64,7 @@ open class BookRepository @Inject constructor(
      */
     fun load() {
         scope.launch {
-            performCrudOperations()
+            performCrudOperations(false)
         }
     }
 
@@ -69,7 +76,7 @@ open class BookRepository @Inject constructor(
         //If we are already refreshing discard this call
         if (booksResourceFlow.value.loading) return
         scope.launch {
-            performCrudOperations {
+            performCrudOperations(false){
                 val remoteBooks = remoteBookDataSource.getAllBooks()
                 localBookDataSource.deleteAllBooks()
                 remoteBooks.forEach { book ->
