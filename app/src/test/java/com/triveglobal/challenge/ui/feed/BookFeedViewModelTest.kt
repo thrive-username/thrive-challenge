@@ -91,7 +91,7 @@ class BookFeedViewModelTest {
     }
 
     private fun initViewModelAndTestObserver() {
-        bookFeedViewModel = BookFeedViewModel(bookRepository, testCoroutineDispatcher)
+        bookFeedViewModel = BookFeedViewModel(bookRepository, testCoroutineDispatcher, testCoroutineDispatcher)
         liveDataTestObserver = bookFeedViewModel.uiModelLiveData.createTestObserver()
     }
 }

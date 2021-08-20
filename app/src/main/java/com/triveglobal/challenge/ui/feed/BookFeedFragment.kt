@@ -1,10 +1,10 @@
 package com.triveglobal.challenge.ui.feed
 
 import android.os.Bundle
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +15,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -22,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.triveglobal.challenge.R
 import com.triveglobal.challenge.model.Book
@@ -47,21 +49,18 @@ class BookFeedFragment : DaggerFragment() {
         savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
-            setContent {
-                val uiModel = viewModel.uiModelLiveData.observeAsState(
-                    BookFeedUIModel(
-                        emptyList(),
-                        false,
-                        null
-                    )
-                )
-                RenderUIModel(uiModel.value)
-            }
+            setContent { FeedContent(viewModel, findNavController()) }
         }
     }
 
     @Composable
-    private fun RenderUIModel(uiModel: BookFeedUIModel) {
+    fun FeedContent(viewModel: BookFeedViewModel, navController: NavController){
+        val uiModel = viewModel.uiModelLiveData.observeAsState(BookFeedUIModel())
+        RenderUIModel(uiModel.value, { navController.navigate(BookFeedFragmentDirections.actionFeedToDetails(it)) }, { viewModel.synchronize() })
+    }
+
+    @Composable
+    private fun RenderUIModel(uiModel: BookFeedUIModel, onBookClicked: (Book) -> Unit, onSynchronizedClicked: () -> Unit) {
         ChallengeTheme {
             Column(Modifier.fillMaxHeight()) {
                 TopAppBar(
@@ -69,13 +68,19 @@ class BookFeedFragment : DaggerFragment() {
                     actions = {
                         if (uiModel.loading) {
                             LoadingIndicator()
+                        }else{
+                            Image(
+                                painter = painterResource(R.drawable.ic_sync),
+                                contentDescription = stringResource(R.string.book_feed_synchronize),
+                                modifier = Modifier.clickable { onSynchronizedClicked() }
+                            )
                         }
                     }
                 )
                 when {
                     uiModel.items == null -> OnScreenMessage(stringResource(R.string.book_feed_loading_content))
                     uiModel.items.isEmpty() -> OnScreenMessage(stringResource(R.string.book_feed_empty_message))
-                    else -> BookFeed(uiModel.items)
+                    else -> BookFeed(uiModel.items, onBookClicked)
                 }
             }
         }
@@ -87,12 +92,10 @@ class BookFeedFragment : DaggerFragment() {
     }
 
     @Composable
-    private fun BookFeed(books: List<Book>) {
+    private fun BookFeed(books: List<Book>, onBookClicked: (Book) -> Unit) {
         LazyColumn {
             items(books) {
-                BookShortSummary(it) { book ->
-                    findNavController().navigate(BookFeedFragmentDirections.actionFeedToDetails(book))
-                }
+                BookShortSummary(it) { book -> onBookClicked(book) }
             }
         }
     }
@@ -170,7 +173,7 @@ class BookFeedFragment : DaggerFragment() {
     private fun Preview() {
         val book = Book("Author", "Categories", 1, null, null, "Publisher", "Title")
         val books = listOf(book, book, book)
-        RenderUIModel(uiModel = BookFeedUIModel(books, true, null))
+        RenderUIModel(uiModel = BookFeedUIModel(books, true, null), {}, {})
     }
 
 }

@@ -20,6 +20,8 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.Mockito.inOrder
+
 
 @RunWith(MockitoJUnitRunner::class)
 class BookRepositoryTest {
@@ -84,7 +86,7 @@ class BookRepositoryTest {
         }
 
     @Test
-    fun `synchronize, Network Call Success and then 2 items state emitted, all books saved on local data source`() =
+    fun `synchronize, Network Call Success and then 2 items state emitted, all books deleted and then all books saved on local data source`() =
         testCoroutineDispatcher.runBlockingTest {
             val flow = bookRepository.booksStream()
             val books = listOf(createBook(), createBook(), createBook())
@@ -95,8 +97,10 @@ class BookRepositoryTest {
                 errorCollector.checkThat(awaitItem(), equalTo(ResourceState()))
                 errorCollector.checkThat(awaitItem(), equalTo(ResourceState(loading = true)))
                 errorCollector.checkThat(awaitItem(), equalTo(ResourceState(data = books)))
+                val inOrder = inOrder(localBookDataSource)
                 val argumentCaptor = argumentCaptor<Book>()
-                verify(localBookDataSource, times(books.size)).saveOrUpdateBook(argumentCaptor.capture())
+                inOrder.verify(localBookDataSource).deleteAllBooks()
+                inOrder.verify(localBookDataSource, times(books.size)).saveOrUpdateBook(argumentCaptor.capture())
                 errorCollector.checkThat(argumentCaptor.allValues, equalTo(books))
                 cancelAndConsumeRemainingEvents()
             }

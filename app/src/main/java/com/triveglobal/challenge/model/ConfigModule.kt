@@ -3,6 +3,7 @@ package com.triveglobal.challenge.model
 import com.triveglobal.challenge.BuildConfig
 import com.triveglobal.challenge.di.qualifiers.BackendBaseUrl
 import com.triveglobal.challenge.di.qualifiers.IODispatcher
+import com.triveglobal.challenge.di.qualifiers.MainDispatcher
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,5 +26,10 @@ class ConfigModule {
     @IODispatcher
     @Provides
     fun provideIODispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+
+    @MainDispatcher
+    @Provides
+    fun provideMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
 
 }

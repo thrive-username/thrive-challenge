@@ -69,7 +69,7 @@ open class BookRepository @Inject constructor(
         scope.launch {
             performCrudOperations {
                 val remoteBooks = remoteBookDataSource.getAllBooks()
-                remoteBookDataSource.deleteAllBooks()
+                localBookDataSource.deleteAllBooks()
                 remoteBooks.forEach { book ->
                     localBookDataSource.saveOrUpdateBook(book)
                 }
