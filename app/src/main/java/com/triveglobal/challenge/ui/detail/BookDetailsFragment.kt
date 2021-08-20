@@ -83,6 +83,7 @@ class BookDetailsFragment : DaggerFragment() {
                 {
                     showCheckoutDialog.value = false
                 }, {
+                    showCheckoutDialog.value = false
                     viewModel.checkOut(it)
                 }
             )
